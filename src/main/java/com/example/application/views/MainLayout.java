@@ -1,8 +1,8 @@
 package com.example.application.views;
 
+import com.example.application.views.categoriaproduc.CategoriaView;
 import com.example.application.views.clientes.ClientesView;
 import com.example.application.views.facturas.FacturasView;
-import com.example.application.views.pedidos.PedidosView;
 import com.example.application.views.productos.ProductosView;
 import com.vaadin.flow.component.applayout.AppLayout;
 import com.vaadin.flow.component.applayout.DrawerToggle;
@@ -41,7 +41,7 @@ public class MainLayout extends AppLayout {
     }
 
     private void addDrawerContent() {
-        H1 appName = new H1("proyecto_Grupo2");
+        H1 appName = new H1("Proyecto Grupo 2");
         appName.addClassNames(LumoUtility.FontSize.LARGE, LumoUtility.Margin.NONE);
         Header header = new Header(appName);
 
@@ -53,9 +53,9 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Productos", ProductosView.class, LineAwesomeIcon.DESKTOP_SOLID.create()));
+        nav.addItem(new SideNavItem("Productos Electronicos", ProductosView.class, LineAwesomeIcon.DESKTOP_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", ClientesView.class, LineAwesomeIcon.USER_SOLID.create()));
-        nav.addItem(new SideNavItem("Pedidos", PedidosView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        nav.addItem(new SideNavItem("Categorias por Productos", CategoriaView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
         nav.addItem(new SideNavItem("Facturas", FacturasView.class, LineAwesomeIcon.CREDIT_CARD.create()));
 
         return nav;

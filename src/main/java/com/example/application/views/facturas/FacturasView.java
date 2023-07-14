@@ -1,13 +1,11 @@
 package com.example.application.views.facturas;
 
-import com.example.application.data.entity.SamplePerson;
-import com.example.application.data.service.SamplePersonService;
+import com.example.application.data.entity.Factura;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.checkbox.CheckboxGroup;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.dependency.Uses;
@@ -25,6 +23,7 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
@@ -37,16 +36,13 @@ import org.springframework.data.jpa.domain.Specification;
 
 @PageTitle("Facturas")
 @Route(value = "facturas", layout = MainLayout.class)
-@Uses(Icon.class)
+
 public class FacturasView extends Div {
 
-    private Grid<SamplePerson> grid;
-
+    private Grid<Factura> grid;
     private Filters filters;
-    private final SamplePersonService samplePersonService;
 
-    public FacturasView(SamplePersonService SamplePersonService) {
-        this.samplePersonService = SamplePersonService;
+    public FacturasView() {
         setSizeFull();
         addClassNames("facturas-view");
 
@@ -59,7 +55,7 @@ public class FacturasView extends Div {
     }
 
     private HorizontalLayout createMobileFilters() {
-        // Mobile version
+
         HorizontalLayout mobileFilters = new HorizontalLayout();
         mobileFilters.setWidthFull();
         mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER,
@@ -67,7 +63,7 @@ public class FacturasView extends Div {
         mobileFilters.addClassName("mobile-filters");
 
         Icon mobileIcon = new Icon("lumo", "plus");
-        Span filtersHeading = new Span("Filters");
+        Span filtersHeading = new Span("Filtros");
         mobileFilters.add(mobileIcon, filtersHeading);
         mobileFilters.setFlexGrow(1, filtersHeading);
         mobileFilters.addClickListener(e -> {
@@ -82,14 +78,12 @@ public class FacturasView extends Div {
         return mobileFilters;
     }
 
-    public static class Filters extends Div implements Specification<SamplePerson> {
+    public static class Filters extends Div implements Specification<Factura> {
 
-        private final TextField name = new TextField("Name");
-        private final TextField phone = new TextField("Phone");
-        private final DatePicker startDate = new DatePicker("Date of Birth");
-        private final DatePicker endDate = new DatePicker();
-        private final MultiSelectComboBox<String> occupations = new MultiSelectComboBox<>("Occupation");
-        private final CheckboxGroup<String> roles = new CheckboxGroup<>("Role");
+        private final TextField codigo = new TextField("Código");
+        private final TextField nombre = new TextField("Nombre");
+        private final TextField telefono = new TextField("Telefono");
+        private final TextField direccion = new TextField("Direccion");
 
         public Filters(Runnable onSearch) {
 
@@ -97,26 +91,18 @@ public class FacturasView extends Div {
             addClassName("filter-layout");
             addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
                     LumoUtility.BoxSizing.BORDER);
-            name.setPlaceholder("First or last name");
 
-            occupations.setItems("Insurance Clerk", "Mortarman", "Beer Coil Cleaner", "Scale Attendant");
 
-            roles.setItems("Worker", "Supervisor", "Manager", "External");
-            roles.addClassName("double-width");
-
-            // Action buttons
-            Button resetBtn = new Button("Reset");
+            Button resetBtn = new Button("Resetear");
             resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             resetBtn.addClickListener(e -> {
-                name.clear();
-                phone.clear();
-                startDate.clear();
-                endDate.clear();
-                occupations.clear();
-                roles.clear();
+                codigo.clear();
+                nombre.clear();
+                telefono.clear();
+                direccion.clear();
                 onSearch.run();
             });
-            Button searchBtn = new Button("Search");
+            Button searchBtn = new Button("Buscar");
             searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             searchBtn.addClickListener(e -> onSearch.run());
 
@@ -124,125 +110,57 @@ public class FacturasView extends Div {
             actions.addClassName(LumoUtility.Gap.SMALL);
             actions.addClassName("actions");
 
-            add(name, phone, createDateRangeFilter(), occupations, roles, actions);
-        }
-
-        private Component createDateRangeFilter() {
-            startDate.setPlaceholder("From");
-
-            endDate.setPlaceholder("To");
-
-            // For screen readers
-            setAriaLabel(startDate, "From date");
-            setAriaLabel(endDate, "To date");
-
-            FlexLayout dateRangeComponent = new FlexLayout(startDate, new Text(" – "), endDate);
-            dateRangeComponent.setAlignItems(FlexComponent.Alignment.BASELINE);
-            dateRangeComponent.addClassName(LumoUtility.Gap.XSMALL);
-
-            return dateRangeComponent;
-        }
-
-        private void setAriaLabel(DatePicker datePicker, String label) {
-            datePicker.getElement().executeJs("const input = this.inputElement;" //
-                    + "input.setAttribute('aria-label', $0);" //
-                    + "input.removeAttribute('aria-labelledby');", label);
+            add(codigo, nombre, telefono, direccion, actions);
         }
 
         @Override
-        public Predicate toPredicate(Root<SamplePerson> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+          public Predicate toPredicate(Root<Factura> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (!name.isEmpty()) {
-                String lowerCaseFilter = name.getValue().toLowerCase();
-                Predicate firstNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("firstName")),
-                        lowerCaseFilter + "%");
-                Predicate lastNameMatch = criteriaBuilder.like(criteriaBuilder.lower(root.get("lastName")),
-                        lowerCaseFilter + "%");
-                predicates.add(criteriaBuilder.or(firstNameMatch, lastNameMatch));
+            if (!codigo.isEmpty()) {
+                String enteredCode = codigo.getValue();
+                Predicate codigoMatch = criteriaBuilder.equal(root.get("codigo"), enteredCode);
+                predicates.add(codigoMatch);
             }
-            if (!phone.isEmpty()) {
-                String databaseColumn = "phone";
-                String ignore = "- ()";
 
-                String lowerCaseFilter = ignoreCharacters(ignore, phone.getValue().toLowerCase());
-                Predicate phoneMatch = criteriaBuilder.like(
-                        ignoreCharacters(ignore, criteriaBuilder, criteriaBuilder.lower(root.get(databaseColumn))),
-                        "%" + lowerCaseFilter + "%");
-                predicates.add(phoneMatch);
-
+            if (!nombre.isEmpty()) {
+                
             }
-            if (startDate.getValue() != null) {
-                String databaseColumn = "dateOfBirth";
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get(databaseColumn),
-                        criteriaBuilder.literal(startDate.getValue())));
+            if (!telefono.isEmpty()) {
+            
             }
-            if (endDate.getValue() != null) {
-                String databaseColumn = "dateOfBirth";
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(criteriaBuilder.literal(endDate.getValue()),
-                        root.get(databaseColumn)));
-            }
-            if (!occupations.isEmpty()) {
-                String databaseColumn = "occupation";
-                List<Predicate> occupationPredicates = new ArrayList<>();
-                for (String occupation : occupations.getValue()) {
-                    occupationPredicates
-                            .add(criteriaBuilder.equal(criteriaBuilder.literal(occupation), root.get(databaseColumn)));
-                }
-                predicates.add(criteriaBuilder.or(occupationPredicates.toArray(Predicate[]::new)));
-            }
-            if (!roles.isEmpty()) {
-                String databaseColumn = "role";
-                List<Predicate> rolePredicates = new ArrayList<>();
-                for (String role : roles.getValue()) {
-                    rolePredicates.add(criteriaBuilder.equal(criteriaBuilder.literal(role), root.get(databaseColumn)));
-                }
-                predicates.add(criteriaBuilder.or(rolePredicates.toArray(Predicate[]::new)));
+            if (!direccion.isEmpty()) {
+               
             }
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
         }
-
-        private String ignoreCharacters(String characters, String in) {
-            String result = in;
-            for (int i = 0; i < characters.length(); i++) {
-                result = result.replace("" + characters.charAt(i), "");
-            }
-            return result;
-        }
-
-        private Expression<String> ignoreCharacters(String characters, CriteriaBuilder criteriaBuilder,
-                Expression<String> inExpression) {
-            Expression<String> expression = inExpression;
-            for (int i = 0; i < characters.length(); i++) {
-                expression = criteriaBuilder.function("replace", String.class, expression,
-                        criteriaBuilder.literal(characters.charAt(i)), criteriaBuilder.literal(""));
-            }
-            return expression;
-        }
-
     }
 
     private Component createGrid() {
-        grid = new Grid<>(SamplePerson.class, false);
-        grid.addColumn("firstName").setAutoWidth(true);
-        grid.addColumn("lastName").setAutoWidth(true);
-        grid.addColumn("email").setAutoWidth(true);
-        grid.addColumn("phone").setAutoWidth(true);
-        grid.addColumn("dateOfBirth").setAutoWidth(true);
-        grid.addColumn("occupation").setAutoWidth(true);
-        grid.addColumn("role").setAutoWidth(true);
+        grid = new Grid<>(Factura.class, false);
+        grid.addColumn("codigo").setAutoWidth(true).setHeader("Código");
+        grid.addColumn("descripcion").setAutoWidth(true).setHeader("Descripción");
+        grid.addColumn("precioUnitario").setAutoWidth(true).setHeader("Precio Unitario");
+        grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad");
 
-        grid.setItems(query -> samplePersonService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)),
-                filters).stream());
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
-        return grid;
+        
+        TextField subtotal = new TextField("Subtotal");
+        TextField isv = new TextField("ISV (15%)");
+        TextField total = new TextField("Total");
+
+        VerticalLayout facturaLayout = new VerticalLayout(subtotal, isv, total);
+        facturaLayout.setWidthFull();
+
+        VerticalLayout mainLayout = new VerticalLayout(grid, facturaLayout);
+        mainLayout.setSizeFull();
+
+        return mainLayout;
     }
 
     private void refreshGrid() {
         grid.getDataProvider().refreshAll();
     }
-
 }
