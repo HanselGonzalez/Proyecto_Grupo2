@@ -1,7 +1,8 @@
 package com.example.application.views.clientes;
 
+import com.example.application.data.controler.ClientesInteractor;
+import com.example.application.data.controler.ClientesInteractorImpl;
 import com.example.application.data.entity.Clientes;
-import com.example.application.data.service.ClientesService;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
@@ -10,67 +11,70 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
+import com.vaadin.flow.component.html.H3;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.ValidationException;
-import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
+import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("Clientes")
-@Route(value = "clientes/:clientesID?/:action?(edit)", layout = MainLayout.class)
-public class ClientesView extends Div implements BeforeEnterObserver {
+@Route(value = "clientes", layout = MainLayout.class)
+public class ClientesView extends Div implements BeforeEnterObserver, ClientesViewModel{
 
     private final String CLIENTES_ID = "clientesID";
     private final String CLIENTES_EDIT_ROUTE_TEMPLATE = "clientes/%s/edit";
 
     private final Grid<Clientes> grid = new Grid<>(Clientes.class, false);
 
-    private TextField cedula;
-    private TextField nombre;
-    private TextField telefono;
-    private TextField direccion;
+    private TextField IdCliente;
+    private TextField Nombre;
+    private TextField Telefono;
+    private TextField Direccion;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
 
-    private final BeanValidationBinder<Clientes> binder;
 
     private Clientes clientes;
+    private List<Clientes> cliente;
+	private TextField Pedidos;
+	private ClientesInteractor controlador;
 
-    private final ClientesService clientesService;
 
-    public ClientesView(ClientesService clientesService) {
-        this.clientesService = clientesService;
+    public ClientesView() {
+       
         addClassNames("clientes-view");
-
+        this.setCliente(new ArrayList<>());
+        this.controlador = new ClientesInteractorImpl(this);
+        
         // Create UI
         SplitLayout splitLayout = new SplitLayout();
-
+        
         createGridLayout(splitLayout);
         createEditorLayout(splitLayout);
-
+      
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("cedula").setAutoWidth(true);
+        grid.addColumn("idCliente").setAutoWidth(true);
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("telefono").setAutoWidth(true);
         grid.addColumn("direccion").setAutoWidth(true);
-        grid.setItems(query -> clientesService.list(
-                PageRequest.of(query.getPage(), query.getPageSize(), VaadinSpringDataHelpers.toSpringDataSort(query)))
-                .stream());
+        //grid.addColumn("pedidos").setAutoWidth(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
@@ -84,13 +88,9 @@ public class ClientesView extends Div implements BeforeEnterObserver {
         });
 
         // Configure Form
-        binder = new BeanValidationBinder<>(Clientes.class);
 
-        // Bind fields. This is where you'd define e.g. validation rules
-        binder.forField(cedula).withConverter(new StringToIntegerConverter("Only numbers are allowed")).bind("cedula");
-
-        binder.bindInstanceFields(this);
-
+        this.controlador.consultarCliente();
+        
         cancel.addClickListener(e -> {
             clearForm();
             refreshGrid();
@@ -101,8 +101,7 @@ public class ClientesView extends Div implements BeforeEnterObserver {
                 if (this.clientes == null) {
                     this.clientes = new Clientes();
                 }
-                binder.writeBean(this.clientes);
-                clientesService.update(this.clientes);
+                
                 clearForm();
                 refreshGrid();
                 Notification.show("Data updated");
@@ -112,8 +111,6 @@ public class ClientesView extends Div implements BeforeEnterObserver {
                         "Error updating the data. Somebody else has updated the record while you were making changes.");
                 n.setPosition(Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
-            } catch (ValidationException validationException) {
-                Notification.show("Failed to update the data. Check again that all values are valid");
             }
         });
     }
@@ -122,19 +119,16 @@ public class ClientesView extends Div implements BeforeEnterObserver {
     public void beforeEnter(BeforeEnterEvent event) {
         Optional<Long> clientesId = event.getRouteParameters().get(CLIENTES_ID).map(Long::parseLong);
         if (clientesId.isPresent()) {
-            Optional<Clientes> clientesFromBackend = clientesService.get(clientesId.get());
-            if (clientesFromBackend.isPresent()) {
-                populateForm(clientesFromBackend.get());
-            } else {
-                Notification.show(String.format("The requested clientes was not found, ID = %s", clientesId.get()),
-                        3000, Notification.Position.BOTTOM_START);
+        }
+               // Notification.show(String.format("The requested clientes was not found, ID = %s", clientesId.get()),
+                  //      3000, Notification.Position.BOTTOM_START);
                 // when a row is selected but the data is no longer available,
                 // refresh grid
-                refreshGrid();
-                event.forwardTo(ClientesView.class);
+               // refreshGrid();
+              //  event.forwardTo(ClientesView.class);
             }
-        }
-    }
+        
+    
 
     private void createEditorLayout(SplitLayout splitLayout) {
         Div editorLayoutDiv = new Div();
@@ -143,14 +137,20 @@ public class ClientesView extends Div implements BeforeEnterObserver {
         Div editorDiv = new Div();
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
-
+        
+        H3 header = new H3("Consultar Cliente");
+        header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
+        
         FormLayout formLayout = new FormLayout();
-        cedula = new TextField("Cedula");
-        nombre = new TextField("Nombre");
-        telefono = new TextField("Telefono");
-        direccion = new TextField("Direccion");
-        formLayout.add(cedula, nombre, telefono, direccion);
+        IdCliente = new TextField("Codigo Cliente");
+        Nombre = new TextField("Nombre");
+        Nombre.setPrefixComponent(VaadinIcon.USER.create());
+        Telefono = new TextField("Telefono");
+       Telefono.setPrefixComponent(VaadinIcon.PHONE.create());
+        Direccion = new TextField("Direccion");
+        formLayout.add(header, IdCliente, Nombre, Telefono, Direccion);
 
+        
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
 
@@ -184,7 +184,26 @@ public class ClientesView extends Div implements BeforeEnterObserver {
 
     private void populateForm(Clientes value) {
         this.clientes = value;
-        binder.readBean(this.clientes);
 
     }
+
+	@Override
+	public void refrescarGridClientes(List<Clientes>cliente) {
+		Collection<Clientes> items = cliente;
+		grid.setItems(items);	
+		this.setCliente(cliente);
+	}
+
+	public List<Clientes> getCliente() {
+		return cliente;
+	}
+
+	public void setCliente(List<Clientes> cliente) {
+		this.cliente = cliente;
+	}
+	
+
+	
+    
+    
 }

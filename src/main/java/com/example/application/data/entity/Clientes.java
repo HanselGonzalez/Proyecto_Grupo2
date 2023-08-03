@@ -5,44 +5,44 @@ import jakarta.persistence.Entity;
 @Entity
 public class Clientes extends AbstractEntity {
 
-    private Integer IdCliente;
-    private String Nombre;
-    private String Telefono;
-    private String Direccion;
-    private Integer Pedidos;
+    private Integer idcliente;
+    private String nombre;
+    private String telefono;
+    private String direccion;
+    private Integer pedidos;
     
     
 	public Integer getIdCliente() {
-		return IdCliente;
+		return idcliente;
 	}
 	public void setIdCliente(Integer idCliente) {
-		IdCliente = idCliente;
+		idcliente = idCliente;
 	}
 	public String getNombre() {
-		return Nombre;
+		return nombre;
 	}
 	public void setNombre(String nombre) {
-		Nombre = nombre;
+		this.nombre = nombre;
 	}
 	
 	
 	public String getDireccion() {
-		return Direccion;
+		return direccion;
 	}
 	public void setDireccion(String direccion) {
-		Direccion = direccion;
+		this.direccion = direccion;
 	}
 	public String getTelefono() {
-		return Telefono;
+		return telefono;
 	}
 	public void setTelefono(String telefono) {
-		Telefono = telefono;
+		this.telefono = telefono;
 	}
 	public Integer getPedidos() {
-		return Pedidos;
+		return pedidos;
 	}
 	public void setPedidos(Integer pedidos) {
-		Pedidos = pedidos;
+		this.pedidos = pedidos;
 	}
 
 

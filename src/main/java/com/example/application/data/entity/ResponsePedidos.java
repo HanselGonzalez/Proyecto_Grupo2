@@ -2,15 +2,15 @@ package com.example.application.data.entity;
 
 import java.util.List;
 
-public class ResponseProductos {
-private List<Producto> items;
+public class ResponsePedidos {
+private List<Factura> items;
 private boolean hasMore;
 private int limit;
 private int offset;
 private int count;
 
 
-public List<Producto>getItems() {
+public List<Factura>getItems() {
 	return items;
 }
 public boolean isHasMore() {
@@ -25,7 +25,7 @@ public int getOffset() {
 public int getCount() {
 	return count;
 }
-public void setItems(List<Producto> items) {
+public void setItems(List<Factura> items) {
 	this.items = items;
 }
 public void setHasMore(boolean hasMore) {

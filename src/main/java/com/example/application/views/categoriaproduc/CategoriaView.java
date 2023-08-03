@@ -1,6 +1,9 @@
 package com.example.application.views.categoriaproduc;
 
+import com.example.application.data.controler.CategoriasInteractor;
+import com.example.application.data.controler.CategoriasInteractorImpl;
 import com.example.application.data.entity.Categoria;
+import com.example.application.data.entity.Clientes;
 import com.example.application.views.MainLayout;
 import com.example.application.views.facturas.FacturasView.Filters;
 import com.vaadin.flow.component.Component;
@@ -48,6 +51,7 @@ import jakarta.persistence.criteria.Root;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -56,13 +60,21 @@ import org.springframework.data.jpa.domain.Specification;
 
 @PageTitle("Categorias de Productos")
 @Route(value = "categoria", layout = MainLayout.class)
-public class CategoriaView extends Div {
+public class CategoriaView extends Div implements CategoriasViewModel {
 
 	private Grid<Categoria> grid;
     private Filters filters;
+    
+    private List<Categoria> categoria;
+    private Categoria categorias;
+    private CategoriasInteractor controlador;
 
     public CategoriaView() {
         addClassNames("categoria-view");
+       this.categoria = new ArrayList<>();
+       this.controlador = new CategoriasInteractorImpl(this);
+        
+        
         addClassNames(Display.FLEX, FlexDirection.COLUMN, Height.FULL);
 
         Main content = new Main();
@@ -119,6 +131,8 @@ public class CategoriaView extends Div {
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
 
+        this.controlador.consultarCategoria();
+        
         VerticalLayout mainLayout = new VerticalLayout(grid);
         mainLayout.setSizeFull();
 
@@ -128,4 +142,13 @@ public class CategoriaView extends Div {
     private void refreshGrid() {
         grid.getDataProvider().refreshAll();
     }
+
+
+
+	@Override
+	public void refrescarGridCategorias(List<Categoria> categoria) {
+		Collection<Categoria> items = categoria;
+		grid.setItems(items);	
+		this.categoria=categoria;
+	}
 }

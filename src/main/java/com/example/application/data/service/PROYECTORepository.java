@@ -1,5 +1,8 @@
 package com.example.application.data.service;
 
+import com.example.application.data.entity.ResponseCategorias;
+import com.example.application.data.entity.ResponseClientes;
+import com.example.application.data.entity.ResponsePedidos;
 import com.example.application.data.entity.ResponseProductos;
 
 import retrofit2.Call;
@@ -13,9 +16,39 @@ public interface PROYECTORepository {
 	    "User-Agent: Retrofit-Sample-App"
 	})
 	@GET("/pls/apex/uth23bd/PDE/productos/")
-	Call<ResponseProductos> obtenerProductos();
+	Call<ResponseProductos>obtenerProductos();
+	
+	
+	@Headers({
+	    "Content-Type: aplication/json",
+	    "Accept-Charset: utf-8",
+	    "User-Agent: Retrofit-Sample-App"
+	})
+	@GET("/pls/apex/uth23bd/PDE/clientes/")
+	Call<ResponseClientes>obtenerClientes();
 	
 	
 	
+	@Headers({
+	    "Content-Type: aplication/json",
+	    "Accept-Charset: utf-8",
+	    "User-Agent: Retrofit-Sample-App"
+	})
+	@GET("/pls/apex/uth23bd/PDE/categorias/")
+	Call<ResponseCategorias>obtenerCategorias();
+	
+	
+	
+	@Headers({
+	    "Content-Type: aplication/json",
+	    "Accept-Charset: utf-8",
+	    "User-Agent: Retrofit-Sample-App"
+	})
+	@GET("/pls/apex/uth23bd/PDE/pedidos/")
+	Call<ResponsePedidos>obtenerPedidos();
+	
+	
+	
+
 	
 }

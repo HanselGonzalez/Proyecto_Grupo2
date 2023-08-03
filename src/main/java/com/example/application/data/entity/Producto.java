@@ -5,18 +5,18 @@ import jakarta.persistence.Entity;
 @Entity
 public class Producto extends AbstractEntity {
 
-    private Integer idProducto;
-    private Integer idCategoria;
+    private Integer idproducto;
+    private String idcategoria;
     private String nombre;
     private Integer precio;
     private Integer stock;
     private String proovedor;
 
     public Integer getIdProducto() {
-        return idProducto;
+        return idproducto;
     }
     public void setIdProducto(Integer idProducto) {
-        this.idProducto = idProducto;
+        this.idproducto = idProducto;
     }
     public String getNombre() {
         return nombre;
@@ -42,11 +42,11 @@ public class Producto extends AbstractEntity {
     public void setProovedor(String proovedor) {
         this.proovedor = proovedor;
     }
-	public Integer getIdCategoria() {
-		return idCategoria;
+	public String getIdCategoria() {
+		return idcategoria;
 	}
-	public void setIdCategoria(Integer idCategoria) {
-		this.idCategoria = idCategoria;
+	public void setIdCategoria(String idCategoria) {
+		this.idcategoria = idCategoria;
 	}
 
 }

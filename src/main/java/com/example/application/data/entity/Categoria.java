@@ -5,17 +5,17 @@ import jakarta.persistence.Entity;
 @Entity
 public class Categoria extends AbstractEntity {
 
-    private String idCategoria;
+    private String idcategoria;
     private String nombre;
     private String descripcion;
     private String cantidad;
     
     
 	public String getIdCategoria() {
-		return idCategoria;
+		return idcategoria;
 	}
 	public void setIdCategoria(String idCategoria) {
-		this.idCategoria = idCategoria;
+		this.idcategoria = idCategoria;
 	}
 	public String getNombre() {
 		return nombre;

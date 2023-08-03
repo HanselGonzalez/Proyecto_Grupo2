@@ -1,6 +1,9 @@
 package com.example.application.views.facturas;
 
+import com.example.application.data.controler.FacturasInteractor;
+import com.example.application.data.controler.FacturasInteractorImpl;
 import com.example.application.data.entity.Factura;
+import com.example.application.data.entity.Producto;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
@@ -30,6 +33,7 @@ import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
@@ -37,15 +41,22 @@ import org.springframework.data.jpa.domain.Specification;
 @PageTitle("Facturas")
 @Route(value = "facturas", layout = MainLayout.class)
 
-public class FacturasView extends Div {
+public class FacturasView extends Div implements FacturasViewModel {
 
     private Grid<Factura> grid;
     private Filters filters;
 
+    private List<Factura> pedidos;
+    private FacturasInteractor controlador;
+    
+    
     public FacturasView() {
         setSizeFull();
         addClassNames("facturas-view");
-
+        this.pedidos = new ArrayList<>();
+        this.controlador = new FacturasInteractorImpl(this);
+        
+        
         filters = new Filters(() -> refreshGrid());
         VerticalLayout layout = new VerticalLayout(createMobileFilters(), filters, createGrid());
         layout.setSizeFull();
@@ -80,7 +91,7 @@ public class FacturasView extends Div {
 
     public static class Filters extends Div implements Specification<Factura> {
 
-        private final TextField codigo = new TextField("Código");
+        private final TextField nPedido = new TextField("NPedido");
         private final TextField nombre = new TextField("Nombre");
         private final TextField telefono = new TextField("Telefono");
         private final TextField direccion = new TextField("Direccion");
@@ -96,7 +107,7 @@ public class FacturasView extends Div {
             Button resetBtn = new Button("Resetear");
             resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
             resetBtn.addClickListener(e -> {
-                codigo.clear();
+                nPedido.clear();
                 nombre.clear();
                 telefono.clear();
                 direccion.clear();
@@ -110,15 +121,15 @@ public class FacturasView extends Div {
             actions.addClassName(LumoUtility.Gap.SMALL);
             actions.addClassName("actions");
 
-            add(codigo, nombre, telefono, direccion, actions);
+            add(nPedido, nombre, telefono, direccion, actions);
         }
 
         @Override
           public Predicate toPredicate(Root<Factura> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (!codigo.isEmpty()) {
-                String enteredCode = codigo.getValue();
+            if (!nPedido.isEmpty()) {
+                String enteredCode = nPedido.getValue();
                 Predicate codigoMatch = criteriaBuilder.equal(root.get("codigo"), enteredCode);
                 predicates.add(codigoMatch);
             }
@@ -138,23 +149,25 @@ public class FacturasView extends Div {
 
     private Component createGrid() {
         grid = new Grid<>(Factura.class, false);
-        grid.addColumn("codigo").setAutoWidth(true).setHeader("Código");
-        grid.addColumn("descripcion").setAutoWidth(true).setHeader("Descripción");
-        grid.addColumn("precioUnitario").setAutoWidth(true).setHeader("Precio Unitario");
+        grid.addColumn("npedido").setAutoWidth(true).setHeader("NPedido");
+        grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
+        grid.addColumn("datoscliente").setAutoWidth(true).setHeader("Cliente");
+        grid.addColumn("idproducto").setAutoWidth(true).setHeader("ID Producto");
+        grid.addColumn("datosproducto").setAutoWidth(true).setHeader("Producto");
         grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad");
+        grid.addColumn("precio").setAutoWidth(true).setHeader("Precio");
+        grid.addColumn("subtotal").setAutoWidth(true).setHeader("Subtotal");
+        grid.addColumn("total").setAutoWidth(true).setHeader("Total");
 
+        
+        
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
 
         
-        TextField subtotal = new TextField("Subtotal");
-        TextField isv = new TextField("ISV (15%)");
-        TextField total = new TextField("Total");
-
-        VerticalLayout facturaLayout = new VerticalLayout(subtotal, isv, total);
-        facturaLayout.setWidthFull();
-
-        VerticalLayout mainLayout = new VerticalLayout(grid, facturaLayout);
+        this.controlador.consultarPedido();
+        
+        VerticalLayout mainLayout = new VerticalLayout(grid);
         mainLayout.setSizeFull();
 
         return mainLayout;
@@ -163,4 +176,12 @@ public class FacturasView extends Div {
     private void refreshGrid() {
         grid.getDataProvider().refreshAll();
     }
+
+	@Override
+	public void refrescarGridPedidos(List<Factura> pedidos) {
+		Collection<Factura> items = pedidos;
+		grid.setItems(items);
+		this.pedidos = pedidos;
+		
+	}
 }

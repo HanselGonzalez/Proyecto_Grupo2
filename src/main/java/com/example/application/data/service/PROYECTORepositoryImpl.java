@@ -4,6 +4,9 @@ import retrofit2.Response;
 
 import java.io.IOException;
 
+import com.example.application.data.entity.ResponseCategorias;
+import com.example.application.data.entity.ResponseClientes;
+import com.example.application.data.entity.ResponsePedidos;
 import com.example.application.data.entity.ResponseProductos;
 
 public class PROYECTORepositoryImpl {
@@ -31,6 +34,37 @@ public class PROYECTORepositoryImpl {
 	public ResponseProductos getProductos() throws IOException {
 		Call<ResponseProductos> call = client.getDatabaseService().obtenerProductos();
 		Response<ResponseProductos> response = call.execute();
+		if(response.isSuccessful()) {
+			return response.body();
+		}else {
+			return null;
+		}
+	}
+	
+	public ResponseClientes getClientes() throws IOException {
+		Call<ResponseClientes> call = client.getDatabaseService().obtenerClientes();
+		Response<ResponseClientes> response = call.execute();
+		if(response.isSuccessful()) {
+			return response.body();
+		}else {
+			return null;
+		}
+	}
+	
+	public ResponseCategorias getCategorias() throws IOException {
+		Call<ResponseCategorias> call = client.getDatabaseService().obtenerCategorias();
+		Response<ResponseCategorias> response = call.execute();
+		if(response.isSuccessful()) {
+			return response.body();
+		}else {
+			return null;
+		}
+	}
+	
+	
+	public ResponsePedidos getPedidos() throws IOException {
+		Call<ResponsePedidos> call = client.getDatabaseService().obtenerPedidos();
+		Response<ResponsePedidos> response = call.execute();
 		if(response.isSuccessful()) {
 			return response.body();
 		}else {
