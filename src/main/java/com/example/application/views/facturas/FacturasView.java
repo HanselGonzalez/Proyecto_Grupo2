@@ -149,7 +149,7 @@ public class FacturasView extends Div implements FacturasViewModel {
 
     private Component createGrid() {
         grid = new Grid<>(Factura.class, false);
-        grid.addColumn("npedido").setAutoWidth(true).setHeader("NPedido");
+        grid.addColumn("npedido").setAutoWidth(true).setHeader("# Pedido");
         grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
         grid.addColumn("datoscliente").setAutoWidth(true).setHeader("Cliente");
         grid.addColumn("idproducto").setAutoWidth(true).setHeader("ID Producto");

@@ -8,9 +8,9 @@ public class Producto extends AbstractEntity {
     private Integer idproducto;
     private String idcategoria;
     private String nombre;
-    private Integer precio;
+    private Double precio;
     private Integer stock;
-    private String proovedor;
+    private String proveedor;
 
     public Integer getIdProducto() {
         return idproducto;
@@ -24,10 +24,10 @@ public class Producto extends AbstractEntity {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-    public Integer getPrecio() {
+    public Double getPrecio() {
         return precio;
     }
-    public void setPrecio(Integer precio) {
+    public void setPrecio(Double precio) {
         this.precio = precio;
     }
     public Integer getStock() {
@@ -36,12 +36,13 @@ public class Producto extends AbstractEntity {
     public void setStock(Integer stock) {
         this.stock = stock;
     }
-    public String getProovedor() {
-        return proovedor;
-    }
-    public void setProovedor(String proovedor) {
-        this.proovedor = proovedor;
-    }
+    
+	public String getProveedor() {
+		return proveedor;
+	}
+	public void setProveedor(String proveedor) {
+		this.proveedor = proveedor;
+	}
 	public String getIdCategoria() {
 		return idcategoria;
 	}

@@ -14,12 +14,14 @@ import com.vaadin.flow.component.orderedlayout.Scroller;
 import com.vaadin.flow.component.sidenav.SideNav;
 import com.vaadin.flow.component.sidenav.SideNavItem;
 import com.vaadin.flow.router.PageTitle;
+import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility;
 import org.vaadin.lineawesome.LineAwesomeIcon;
 
 /**
  * The main view is a top-level placeholder for other views.
  */
+@Route("")
 public class MainLayout extends AppLayout {
 
     private static final long serialVersionUID = 1L;
@@ -54,9 +56,9 @@ public class MainLayout extends AppLayout {
     private SideNav createNavigation() {
         SideNav nav = new SideNav();
 
-        nav.addItem(new SideNavItem("Productos Electronicos", ProductosView.class, LineAwesomeIcon.DESKTOP_SOLID.create()));
+        nav.addItem(new SideNavItem("Dispositivos Electronicos", ProductosView.class, LineAwesomeIcon.DESKTOP_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", ClientesView.class, LineAwesomeIcon.USER_SOLID.create()));
-        nav.addItem(new SideNavItem("Categorias por Productos", CategoriaView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
+        nav.addItem(new SideNavItem("Categorias de Productos", CategoriaView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
         nav.addItem(new SideNavItem("Facturas", FacturasView.class, LineAwesomeIcon.CREDIT_CARD.create()));
 
         return nav;

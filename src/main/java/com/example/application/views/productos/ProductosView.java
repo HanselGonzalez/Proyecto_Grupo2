@@ -82,7 +82,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("precio").setAutoWidth(true);
         grid.addColumn("stock").setAutoWidth(true);
-        grid.addColumn("proovedor").setAutoWidth(true);
+        grid.addColumn("proveedor").setAutoWidth(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form

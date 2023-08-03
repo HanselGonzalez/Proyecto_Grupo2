@@ -11,9 +11,9 @@ public class Factura extends AbstractEntity {
     private String idproducto;
     private String datosproducto;
     private Integer cantidad;
-    private Integer precio;
-    private Integer subtotal;
-    private Integer total;
+    private Double precio;
+    private Double subtotal;
+    private Double total;
     
     
     
@@ -53,22 +53,22 @@ public class Factura extends AbstractEntity {
 	public void setCantidad(Integer cantidad) {
 		this.cantidad = cantidad;
 	}
-	public Integer getPrecio() {
+	public Double getPrecio() {
 		return precio;
 	}
-	public void setPrecio(Integer precio) {
+	public void setPrecio(Double precio) {
 		this.precio = precio;
 	}
-	public Integer getSubtotal() {
+	public Double getSubtotal() {
 		return subtotal;
 	}
-	public void setSubtotal(Integer subtotal) {
+	public void setSubtotal(Double subtotal) {
 		this.subtotal = subtotal;
 	}
-	public Integer getTotal() {
+	public Double getTotal() {
 		return total;
 	}
-	public void setTotal(Integer total) {
+	public void setTotal(Double total) {
 		this.total = total;
 	}
     
