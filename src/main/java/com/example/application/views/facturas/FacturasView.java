@@ -26,6 +26,9 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -96,10 +99,9 @@ public class FacturasView extends Div implements FacturasViewModel {
 
     public static class Filters extends Div implements Specification<Factura> {
 
-        private final TextField nPedido = new TextField("NPedido");
-        private final TextField nombre = new TextField("Nombre");
-        private final TextField telefono = new TextField("Telefono");
-        private final TextField direccion = new TextField("Direccion");
+        private final TextField idcliente = new TextField("ID Cliente");
+        private final TextField idproducto = new TextField("ID Producto");
+        private final TextField cantidad = new TextField("Cantidad");
 
         public Filters(Runnable onSearch) {
 
@@ -110,42 +112,36 @@ public class FacturasView extends Div implements FacturasViewModel {
 
 
             Button resetBtn = new Button("Resetear");
-            resetBtn.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+            resetBtn.addClassName("button-spacing");
             resetBtn.addClickListener(e -> {
-                nPedido.clear();
-                nombre.clear();
-                telefono.clear();
-                direccion.clear();
+                idcliente.clear();
+                idproducto.clear();
+                cantidad.clear();
                 onSearch.run();
             });
             Button searchBtn = new Button("Buscar");
-            searchBtn.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
             searchBtn.addClickListener(e -> onSearch.run());
 
             Div actions = new Div(resetBtn, searchBtn);
-            actions.addClassName(LumoUtility.Gap.SMALL);
             actions.addClassName("actions");
 
-            add(nPedido, nombre, telefono, direccion, actions);
+            add(idcliente, idproducto, cantidad, actions);
         }
 
         @Override
           public Predicate toPredicate(Root<Factura> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
             List<Predicate> predicates = new ArrayList<>();
 
-            if (!nPedido.isEmpty()) {
-                String enteredCode = nPedido.getValue();
+            if (!idcliente.isEmpty()) {
+                String enteredCode = idcliente.getValue();
                 Predicate codigoMatch = criteriaBuilder.equal(root.get("codigo"), enteredCode);
                 predicates.add(codigoMatch);
             }
 
-            if (!nombre.isEmpty()) {
-                
-            }
-            if (!telefono.isEmpty()) {
+            if (!idproducto.isEmpty()) {
             
             }
-            if (!direccion.isEmpty()) {
+            if (!cantidad.isEmpty()) {
                
             }
             return criteriaBuilder.and(predicates.toArray(Predicate[]::new));

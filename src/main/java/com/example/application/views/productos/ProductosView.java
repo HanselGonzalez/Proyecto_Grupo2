@@ -38,6 +38,7 @@ import java.util.Optional;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+@SuppressWarnings("serial")
 @PageTitle("Dispositivos Electronicos")
 @Route(value = "productos/:productos?/:action?(edit)", layout = MainLayout.class)
 public class ProductosView extends Div implements BeforeEnterObserver, ProductosViewModel {
@@ -226,7 +227,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
            this.stock.setValue("");
            this.proovedor.setValue("");
         } else {
-        	this.idProducto.setValue(value.getIdCategoria());
+        	this.idProducto.setValue(String.valueOf(value.getIdProducto()));
             this.idCategoria.setValue(value.getIdCategoria());
             this.nombre.setValue(value.getNombre());
             this.precio.setValue(String.valueOf(value.getPrecio()));

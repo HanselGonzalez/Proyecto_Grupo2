@@ -3,7 +3,9 @@ package com.example.application.views.clientes;
 import com.example.application.data.controler.ClientesInteractor;
 import com.example.application.data.controler.ClientesInteractorImpl;
 import com.example.application.data.entity.Clientes;
+import com.example.application.data.entity.Producto;
 import com.example.application.views.MainLayout;
+import com.example.application.views.productos.ProductosView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -31,8 +33,9 @@ import java.util.List;
 import java.util.Optional;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
+@SuppressWarnings("serial")
 @PageTitle("Clientes")
-@Route(value = "clientes", layout = MainLayout.class)
+@Route(value = "clientes/:clientes?/:action?(edit)", layout = MainLayout.class)
 public class ClientesView extends Div implements BeforeEnterObserver, ClientesViewModel{
 
     private final String CLIENTES_ID = "clientesID";
@@ -52,14 +55,13 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
     private Clientes clientes;
     private List<Clientes> cliente;
-	private TextField Pedidos;
 	private ClientesInteractor controlador;
 
 
     public ClientesView() {
        
         addClassNames("clientes-view");
-        this.setCliente(new ArrayList<>());
+        cliente = new ArrayList<>();
         this.controlador = new ClientesInteractorImpl(this);
         
         // Create UI
@@ -84,7 +86,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(CLIENTES_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(CLIENTES_EDIT_ROUTE_TEMPLATE, event.getValue().getIdcliente()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(ClientesView.class);
@@ -121,18 +123,27 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> clientesId = event.getRouteParameters().get(CLIENTES_ID).map(Long::parseLong);
+        Optional<String> clientesId = event.getRouteParameters().get(CLIENTES_ID);
+        boolean encontrado = false;
         if (clientesId.isPresent()) {
-        }
-               // Notification.show(String.format("The requested clientes was not found, ID = %s", clientesId.get()),
-                  //      3000, Notification.Position.BOTTOM_START);
-                // when a row is selected but the data is no longer available,
-                // refresh grid
-               // refreshGrid();
-              //  event.forwardTo(ClientesView.class);
+            for(Clientes c: this.cliente) {
+            	if(c.getIdcliente().equals(clientesId.get())) {
+            	populateForm(c);
+            	encontrado = true;
+            	break;
+            }
+    	}
+            if (!encontrado) {
+            	Notification.show(String.format("El cliente con identidad = %s", clientesId.get()+" no fue encontrado"),
+                        3000, Notification.Position.BOTTOM_START);
+                
+            	
+                refreshGrid();
+                event.forwardTo(ClientesView.class);
             }
         
-    
+        }
+    }
 
     private void createEditorLayout(SplitLayout splitLayout) {
         Div editorLayoutDiv = new Div();
@@ -154,6 +165,11 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         Direccion = new TextField("Direccion");
         correo = new TextField("Correo Electronico");
 
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            Clientes selectedProducto = event.getValue();
+            populateForm(selectedProducto);
+        });
+        
         formLayout.add(header, IdCliente, Nombre, Telefono, Direccion, correo);
 
         
@@ -180,6 +196,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
     }
 
     private void refreshGrid() {
+    	this.controlador.consultarCliente();
         grid.select(null);
         grid.getDataProvider().refreshAll();
     }
@@ -190,6 +207,19 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
     private void populateForm(Clientes value) {
         this.clientes = value;
+        if(value == null) {
+        	this.IdCliente.setValue("");
+        	this.Nombre.setValue("");
+        	this.Telefono.setValue("");
+        	this.Direccion.setValue("");
+        	this.correo.setValue("");
+        }else {
+        	this.IdCliente.setValue(String.valueOf(value.getIdcliente()));
+        	this.Nombre.setValue(value.getNombre());
+        	this.Telefono.setValue(value.getTelefono());
+        	this.Direccion.setValue(value.getDireccion());
+        	this.correo.setValue(value.getCorreoelectronico());
+        }
 
     }
 
@@ -197,7 +227,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 	public void refrescarGridClientes(List<Clientes>cliente) {
 		Collection<Clientes> items = cliente;
 		grid.setItems(items);	
-		this.setCliente(cliente);
+		this.cliente = cliente;
 	}
 
 	public List<Clientes> getCliente() {

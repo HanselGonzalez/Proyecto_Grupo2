@@ -31,3 +31,7 @@
       --lumo-body-text-color: hsla(214, 0%, 100%, 0.9);
 
     }
+    
+    .button-spacing {
+  margin-right: 10px; 
+}
