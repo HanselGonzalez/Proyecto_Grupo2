@@ -126,6 +126,7 @@ public class CategoriaView extends Div implements CategoriasViewModel {
         grid.addColumn("nombre").setAutoWidth(true).setHeader("Nombre");
         grid.addColumn("descripcion").setAutoWidth(true).setHeader("Descripcion");
         grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad de Productos");
+        grid.addColumn("idultimoproductovendido").setAutoWidth(true).setHeader("ID Ultimo Producto Vendido");
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);

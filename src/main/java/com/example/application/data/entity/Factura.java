@@ -1,5 +1,8 @@
 package com.example.application.data.entity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import jakarta.persistence.Entity;
 
 @Entity
@@ -12,8 +15,8 @@ public class Factura extends AbstractEntity {
     private String datosproducto;
     private Integer cantidad;
     private Double precio;
-    private Double subtotal;
     private Double total;
+    private String fechadelpedido ;
     
     
     
@@ -59,18 +62,26 @@ public class Factura extends AbstractEntity {
 	public void setPrecio(Double precio) {
 		this.precio = precio;
 	}
-	public Double getSubtotal() {
-		return subtotal;
-	}
-	public void setSubtotal(Double subtotal) {
-		this.subtotal = subtotal;
-	}
+	
 	public Double getTotal() {
 		return total;
 	}
 	public void setTotal(Double total) {
 		this.total = total;
 	}
+	public String getFechadelpedido() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    	Date fecha = new Date();
+
+    	String fechadelpedido = dateFormat.format(fecha);
+		return fechadelpedido;
+	}
+	public void setFechadelpedido(String fechadelpedido) {
+		
+		this.fechadelpedido = fechadelpedido;
+	}
+	
     
     
     

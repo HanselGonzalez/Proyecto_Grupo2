@@ -8,7 +8,8 @@ public class Categoria extends AbstractEntity {
     private String idcategoria;
     private String nombre;
     private String descripcion;
-    private String cantidad;
+    private Integer cantidad;
+    private Integer idultimoproductovendido;
     
     
 	public String getIdCategoria() {
@@ -29,13 +30,20 @@ public class Categoria extends AbstractEntity {
 	public void setDescripcion(String descripcion) {
 		this.descripcion = descripcion;
 	}
-	public String getCantidad() {
+	public Integer getCantidad() {
 		return cantidad;
 	}
-	public void setCantidad(String cantidad) {
+	public void setCantidad(Integer cantidad) {
 		this.cantidad = cantidad;
 	}
-    
+	public Integer getIdultimoproductovendido() {
+		return idultimoproductovendido;
+	}
+	public void setIdultimoproductovendido(Integer idultimoproductovendido) {
+		this.idultimoproductovendido = idultimoproductovendido;
+	}
+	
+	
     
 	
    

@@ -26,6 +26,7 @@ import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
+import com.vaadin.flow.router.RouteAlias;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
@@ -38,7 +39,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 @PageTitle("Dispositivos Electronicos")
-@Route(value = "productos", layout = MainLayout.class)
+@Route(value = "productos/:productos?/:action?(edit)", layout = MainLayout.class)
 public class ProductosView extends Div implements BeforeEnterObserver, ProductosViewModel {
 
     private final String PRODUCTO_ID = "productoID";
@@ -64,7 +65,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
 
     public ProductosView() {      
         addClassNames("productos-view");
-        setProductos(new ArrayList<>());
+        productos = new ArrayList<>();
         this.controlador = new ProductoInteractorImpl(this);
         
         
@@ -81,20 +82,24 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
         grid.addColumn("idCategoria").setAutoWidth(true);
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("precio").setAutoWidth(true);
-        grid.addColumn("stock").setAutoWidth(true);
+        grid.addColumn("cantidad").setAutoWidth(true);
         grid.addColumn("proveedor").setAutoWidth(true);
+        grid.addColumn("pedidosrealizados").setAutoWidth(true).setHeader("Pedidos Realizados");
+        
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
         // when a row is selected or deselected, populate form
         grid.asSingleSelect().addValueChangeListener(event -> {
             if (event.getValue() != null) {
-                UI.getCurrent().navigate(String.format(PRODUCTO_EDIT_ROUTE_TEMPLATE, event.getValue().getId()));
+                UI.getCurrent().navigate(String.format(PRODUCTO_EDIT_ROUTE_TEMPLATE, event.getValue().getIdProducto()));
             } else {
                 clearForm();
                 UI.getCurrent().navigate(ProductosView.class);
             }
         });
 
+        
+        
         this.controlador.consultarProducto();
         
         // Configure Form
@@ -125,16 +130,29 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<Long> productoId = event.getRouteParameters().get(PRODUCTO_ID).map(Long::parseLong);
-        if (productoId.isPresent()) {
-        }
-                //Notification.show(String.format("The requested producto was not found, ID = %s", productoId.get()),
-                   //     3000, Notification.Position.BOTTOM_START);
-                // when a row is selected but the data is no longer available,
-                // refresh grid
-               // refreshGrid();
-               // event.forwardTo(ProductosView.class);
+    	
+    	Optional<String> productoId = event.getRouteParameters().get(PRODUCTO_ID);
+        boolean encontrado = false;
+    	if (productoId.isPresent()) {
+            for(Producto p: this.productos) {
+            	if(p.getIdProducto().equals(productoId.get())) {
+            	populateForm(p);
+            	encontrado = true;
+            	break;
             }
+    	}
+    	
+    	if (!encontrado) {
+        	Notification.show(String.format("El producto con identidad = %s", productoId.get()+" no fue encontrado"),
+                    3000, Notification.Position.BOTTOM_START);
+            // when a row is selected but the data is no longer available,
+            // refresh grid
+            refreshGrid();
+            event.forwardTo(ProductosView.class);
+        }
+    }
+}
+
         
     
 
@@ -146,19 +164,25 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
         
-        H3 header = new H3("Consultar Producto");
+        H3 header = new H3("Crear Producto");
         header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
         
         FormLayout formLayout = new FormLayout();
         idProducto = new TextField("Id Producto");
         idProducto.setPrefixComponent(VaadinIcon.DESKTOP.create());
         nombre = new TextField("Nombre");
-        stock = new TextField("Stock");
+        stock = new TextField("Cantidad");
         precio = new TextField("Precio");
         precio.setPrefixComponent(VaadinIcon.MONEY.create());
         idCategoria = new TextField("Categoria");
         proovedor = new TextField("Proovedor");
-        formLayout.add(header, idProducto, idCategoria, precio, nombre, stock, proovedor);
+        
+        grid.asSingleSelect().addValueChangeListener(event -> {
+            Producto selectedProducto = event.getValue();
+            populateForm(selectedProducto);
+        });
+        
+        formLayout.add(header, idProducto, idCategoria, nombre,precio, stock, proovedor);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -183,7 +207,8 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
     }
 
     private void refreshGrid() {
-        grid.select(null);
+        this.controlador.consultarProducto();
+    	grid.select(null);
         grid.getDataProvider().refreshAll();
     }
 
@@ -193,6 +218,21 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
 
     private void populateForm(Producto value) {
         this.producto = value;
+        if (value == null) {
+           this.idProducto.setValue("");
+           this.idCategoria.setValue("");
+           this.nombre.setValue("");
+           this.precio.setValue("0.0");
+           this.stock.setValue("");
+           this.proovedor.setValue("");
+        } else {
+        	this.idProducto.setValue(value.getIdCategoria());
+            this.idCategoria.setValue(value.getIdCategoria());
+            this.nombre.setValue(value.getNombre());
+            this.precio.setValue(String.valueOf(value.getPrecio()));
+            this.stock.setValue(String.valueOf(value.getCantidad()));
+            this.proovedor.setValue(value.getProveedor());
+        }
 
     }
 
@@ -201,7 +241,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
 	public void refrescarGridProductos(List<Producto> productos) {
 		Collection<Producto> items = productos;
 		grid.setItems(items);
-		this.setProductos(productos);
+		this.productos = productos;
 	}
 
 	public List<Producto> getProductos() {

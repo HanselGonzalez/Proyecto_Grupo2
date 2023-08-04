@@ -26,17 +26,22 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
-
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Expression;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
+
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.jpa.domain.Specification;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 @PageTitle("Facturas")
 @Route(value = "facturas", layout = MainLayout.class)
@@ -48,7 +53,7 @@ public class FacturasView extends Div implements FacturasViewModel {
 
     private List<Factura> pedidos;
     private FacturasInteractor controlador;
-    
+
     
     public FacturasView() {
         setSizeFull();
@@ -148,6 +153,8 @@ public class FacturasView extends Div implements FacturasViewModel {
     }
 
     private Component createGrid() {
+    	
+    	
         grid = new Grid<>(Factura.class, false);
         grid.addColumn("npedido").setAutoWidth(true).setHeader("# Pedido");
         grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
@@ -155,10 +162,11 @@ public class FacturasView extends Div implements FacturasViewModel {
         grid.addColumn("idproducto").setAutoWidth(true).setHeader("ID Producto");
         grid.addColumn("datosproducto").setAutoWidth(true).setHeader("Producto");
         grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad");
+        grid.addColumn("fechadelpedido").setAutoWidth(true).setHeader("Fecha Realizado");
         grid.addColumn("precio").setAutoWidth(true).setHeader("Precio");
-        grid.addColumn("subtotal").setAutoWidth(true).setHeader("Subtotal");
         grid.addColumn("total").setAutoWidth(true).setHeader("Total");
 
+        
         
         
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);

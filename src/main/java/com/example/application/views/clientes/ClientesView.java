@@ -44,6 +44,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
     private TextField Nombre;
     private TextField Telefono;
     private TextField Direccion;
+    private TextField correo;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
@@ -70,10 +71,13 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("idCliente").setAutoWidth(true);
+        grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("telefono").setAutoWidth(true);
         grid.addColumn("direccion").setAutoWidth(true);
+        grid.addColumn("correoelectronico").setAutoWidth(true);
+        grid.addColumn("idultimopedido").setAutoWidth(true).setHeader("ID Ultimo Pedido");
+        grid.addColumn("pedidosrealizados").setAutoWidth(true).setHeader("Pedidos Realizados");
         //grid.addColumn("pedidos").setAutoWidth(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -142,13 +146,15 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
         
         FormLayout formLayout = new FormLayout();
-        IdCliente = new TextField("Codigo Cliente");
+        IdCliente = new TextField("ID Cliente");
         Nombre = new TextField("Nombre");
         Nombre.setPrefixComponent(VaadinIcon.USER.create());
         Telefono = new TextField("Telefono");
        Telefono.setPrefixComponent(VaadinIcon.PHONE.create());
         Direccion = new TextField("Direccion");
-        formLayout.add(header, IdCliente, Nombre, Telefono, Direccion);
+        correo = new TextField("Correo Electronico");
+
+        formLayout.add(header, IdCliente, Nombre, Telefono, Direccion, correo);
 
         
         editorDiv.add(formLayout);

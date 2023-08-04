@@ -7,16 +7,17 @@ public class Clientes extends AbstractEntity {
 
     private Integer idcliente;
     private String nombre;
+    private String correoelectronico;
+    private String idultimopedido;
     private String telefono;
     private String direccion;
-    private Integer pedidos;
+    private Integer pedidosrealizados;
     
-    
-	public Integer getIdCliente() {
+	public Integer getIdcliente() {
 		return idcliente;
 	}
-	public void setIdCliente(Integer idCliente) {
-		idcliente = idCliente;
+	public void setIdcliente(Integer idcliente) {
+		this.idcliente = idcliente;
 	}
 	public String getNombre() {
 		return nombre;
@@ -26,24 +27,40 @@ public class Clientes extends AbstractEntity {
 	}
 	
 	
-	public String getDireccion() {
-		return direccion;
-	}
-	public void setDireccion(String direccion) {
-		this.direccion = direccion;
-	}
 	public String getTelefono() {
 		return telefono;
 	}
 	public void setTelefono(String telefono) {
 		this.telefono = telefono;
 	}
-	public Integer getPedidos() {
-		return pedidos;
+	public String getDireccion() {
+		return direccion;
 	}
-	public void setPedidos(Integer pedidos) {
-		this.pedidos = pedidos;
+	public void setDireccion(String direccion) {
+		this.direccion = direccion;
 	}
+	public Integer getPedidosrealizados() {
+		return pedidosrealizados;
+	}
+	public void setPedidosrealizados(Integer pedidosrealizados) {
+		this.pedidosrealizados = pedidosrealizados;
+	}
+	public String getCorreoelectronico() {
+		return correoelectronico;
+	}
+	public void setCorreoelectronico(String correoelectronico) {
+		this.correoelectronico = correoelectronico;
+	}
+	public String getIdultimopedido() {
+		return idultimopedido;
+	}
+	public void setIdultimopedido(String idultimopedido) {
+		this.idultimopedido = idultimopedido;
+	}
+    
+    
+	
+    
 
 
 }
