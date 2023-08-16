@@ -2,182 +2,221 @@ package com.example.application.views.facturas;
 
 import com.example.application.data.controler.FacturasInteractor;
 import com.example.application.data.controler.FacturasInteractorImpl;
+import com.example.application.data.entity.Categoria;
+import com.example.application.data.entity.Clientes;
 import com.example.application.data.entity.Factura;
 import com.example.application.data.entity.Producto;
 import com.example.application.views.MainLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.button.ButtonVariant;
-import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-import com.vaadin.flow.component.datepicker.DatePicker;
-import com.vaadin.flow.component.dependency.Uses;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.Div;
-import com.vaadin.flow.component.html.Span;
-import com.vaadin.flow.component.icon.Icon;
-import com.vaadin.flow.component.orderedlayout.FlexComponent;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.html.Main;
+import com.vaadin.flow.component.html.Section;
+import com.vaadin.flow.component.notification.Notification;
+import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
-import com.vaadin.flow.spring.data.VaadinSpringDataHelpers;
 import com.vaadin.flow.theme.lumo.LumoUtility;
+import com.vaadin.flow.theme.lumo.LumoUtility.AlignItems;
+import com.vaadin.flow.theme.lumo.LumoUtility.Display;
+import com.vaadin.flow.theme.lumo.LumoUtility.FlexDirection;
+import com.vaadin.flow.theme.lumo.LumoUtility.Gap;
+import com.vaadin.flow.theme.lumo.LumoUtility.Height;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
-@PageTitle("Facturas")
+@PageTitle("Pedidos")
 @Route(value = "facturas", layout = MainLayout.class)
 
 public class FacturasView extends Div implements FacturasViewModel {
 
     private Grid<Factura> grid;
-    private Filters filters;
 
+    private Button realizar;
+    private Button consultar;
+	private Button cancelar;
+    private Factura pedido;
     private List<Factura> pedidos;
     private FacturasInteractor controlador;
+	private ComboBox<Clientes> clientes;
+	private List<Clientes> cliente;
+	private TextField idproducto;
+	
+	private List<Producto> productos;
+	private ComboBox<Producto> producto;
+
+	private TextField cantidad;
 
     
     public FacturasView() {
-        setSizeFull();
         addClassNames("facturas-view");
         this.pedidos = new ArrayList<>();
         this.controlador = new FacturasInteractorImpl(this);
         
+        addClassNames(Display.FLEX, FlexDirection.COLUMN, Height.FULL);
+
         
-        filters = new Filters(() -> refreshGrid());
-        VerticalLayout layout = new VerticalLayout(createMobileFilters(), filters, createGrid());
+
+
+        Main content = new Main();
+        content.addClassNames(Display.GRID, Gap.XLARGE, AlignItems.START);
+
+        content.add(createCheckoutForm());
+        add(content);
+        
+        VerticalLayout layout = new VerticalLayout(createGrid());
         layout.setSizeFull();
         layout.setPadding(false);
         layout.setSpacing(false);
         add(layout);
     }
 
-    private HorizontalLayout createMobileFilters() {
+    private Component createCheckoutForm() {
+        VerticalLayout checkoutForm = new VerticalLayout();
 
-        HorizontalLayout mobileFilters = new HorizontalLayout();
-        mobileFilters.setWidthFull();
-        mobileFilters.addClassNames(LumoUtility.Padding.MEDIUM, LumoUtility.BoxSizing.BORDER,
-                LumoUtility.AlignItems.CENTER);
-        mobileFilters.addClassName("mobile-filters");
+        checkoutForm.add(createPersonalDetailsSection());
 
-        Icon mobileIcon = new Icon("lumo", "plus");
-        Span filtersHeading = new Span("Filtros");
-        mobileFilters.add(mobileIcon, filtersHeading);
-        mobileFilters.setFlexGrow(1, filtersHeading);
-        mobileFilters.addClickListener(e -> {
-            if (filters.getClassNames().contains("visible")) {
-                filters.removeClassName("visible");
-                mobileIcon.getElement().setAttribute("icon", "lumo:plus");
-            } else {
-                filters.addClassName("visible");
-                mobileIcon.getElement().setAttribute("icon", "lumo:minus");
-            }
-        });
-        return mobileFilters;
+        return checkoutForm;
     }
 
-    public static class Filters extends Div implements Specification<Factura> {
+    private Section createPersonalDetailsSection() {
+    	Section personalDetails = new Section();
+        personalDetails.addClassNames(Display.FLEX, FlexDirection.ROW, Margin.Bottom.XSMALL, Margin.Top.SMALL, AlignItems.CENTER);
 
-        private final TextField idcliente = new TextField("ID Cliente");
-        private final TextField idproducto = new TextField("ID Producto");
-        private final TextField cantidad = new TextField("Cantidad");
+        clientes = new ComboBox<>("Cliente");
+        producto = new ComboBox<>("Producto");
+        cantidad = new TextField("Cantidad");
+        realizar = new Button("Realizar Pedido");
+        cancelar = new Button("Cancelar");
+        consultar = new Button("Consultar");
+        
+        clientes.setItemLabelGenerator(Clientes::getNombre);
+        producto.setItemLabelGenerator(Producto::getNombre);
 
-        public Filters(Runnable onSearch) {
+        
+        
+        clientes.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
+        producto.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
+        cantidad.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
 
-            setWidthFull();
-            addClassName("filter-layout");
-            addClassNames(LumoUtility.Padding.Horizontal.LARGE, LumoUtility.Padding.Vertical.MEDIUM,
-                    LumoUtility.BoxSizing.BORDER);
+        realizar.addClassNames(Margin.Top.MEDIUM, Padding.LARGE);
+        realizar.addClassName("button-spacing");
+        cancelar.addClassNames(Margin.Top.MEDIUM, Padding.LARGE);
+        consultar.addClassNames(Margin.Top.MEDIUM, Padding.LARGE);
 
 
-            Button resetBtn = new Button("Resetear");
-            resetBtn.addClassName("button-spacing");
-            resetBtn.addClickListener(e -> {
-                idcliente.clear();
-                idproducto.clear();
-                cantidad.clear();
-                onSearch.run();
-            });
-            Button searchBtn = new Button("Buscar");
-            searchBtn.addClickListener(e -> onSearch.run());
+        
 
-            Div actions = new Div(resetBtn, searchBtn);
-            actions.addClassName("actions");
+        personalDetails.add(clientes, producto,cantidad, realizar,cancelar,consultar);
 
-            add(idcliente, idproducto, cantidad, actions);
-        }
-
-        @Override
-          public Predicate toPredicate(Root<Factura> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
-            List<Predicate> predicates = new ArrayList<>();
-
-            if (!idcliente.isEmpty()) {
-                String enteredCode = idcliente.getValue();
-                Predicate codigoMatch = criteriaBuilder.equal(root.get("codigo"), enteredCode);
-                predicates.add(codigoMatch);
-            }
-
-            if (!idproducto.isEmpty()) {
-            
-            }
-            if (!cantidad.isEmpty()) {
-               
-            }
-            return criteriaBuilder.and(predicates.toArray(Predicate[]::new));
-        }
+        return personalDetails;
     }
 
     private Component createGrid() {
     	
-    	
-        grid = new Grid<>(Factura.class, false);
-        grid.addColumn("npedido").setAutoWidth(true).setHeader("# Pedido");
-        grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
-        grid.addColumn("datoscliente").setAutoWidth(true).setHeader("Cliente");
-        grid.addColumn("idproducto").setAutoWidth(true).setHeader("ID Producto");
-        grid.addColumn("datosproducto").setAutoWidth(true).setHeader("Producto");
-        grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad");
-        grid.addColumn("fechadelpedido").setAutoWidth(true).setHeader("Fecha Realizado");
-        grid.addColumn("precio").setAutoWidth(true).setHeader("Precio");
-        grid.addColumn("total").setAutoWidth(true).setHeader("Total");
-
+    	this.controlador.consultarCliente();
+        this.controlador.consultarProducto();
         
+    	
+        
+        
+        grid = new Grid<>(Factura.class, false);
+        grid.addColumn(Factura::getNpedido).setHeader("# Pedido").setAutoWidth(true);
+        grid.addColumn(Factura::getCliente).setHeader("Cliente").setAutoWidth(true);
+        grid.addColumn(Factura::getProducto).setHeader("Producto").setAutoWidth(true);
+        grid.addColumn(Factura::getPrecio).setHeader("Precio").setAutoWidth(true);
+        grid.addColumn(Factura::getCantidad).setHeader("Cantidad").setAutoWidth(true);
+        grid.addColumn(Factura::getFechadelpedido).setHeader("Fecha del Pedido").setAutoWidth(true);
+        
+        
+        consultar.addClickListener(e -> {
+            
+        	
+            this.controlador.consultarPedido(this.clientes.getValue().getIdcliente());
+            
+        });	
         
         
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
         grid.addClassNames(LumoUtility.Border.TOP, LumoUtility.BorderColor.CONTRAST_10);
+        grid.addClassNames("rounded-corners");
 
         
-        this.controlador.consultarPedido();
         
         VerticalLayout mainLayout = new VerticalLayout(grid);
         mainLayout.setSizeFull();
 
+        
+        
+        
+        realizar.addClickListener(e -> {
+            try {
+                         	
+                    this.pedido = new Factura();
+                    
+                    this.pedido.setIdcliente(this.clientes.getValue().getIdcliente());
+                    this.pedido.setIdproducto(this.producto.getValue().getIdProducto());
+                    
+                    String cantidadtext = this.cantidad.getValue();
+                    int cantidad = Integer.parseInt(cantidadtext);
+                    this.pedido.setCantidad(cantidad);
+                    
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+                	Date fecha = new Date();
+                	String fechadelpedido = dateFormat.format(fecha);
+                	
+                	this.pedido.setFechadelpedido(fechadelpedido);
+                	
+            		
+                    
+                    
+                    
+                    this.controlador.crearPedidos(pedido);
+                    
+               clearForm();
+                refreshGrid();
+                UI.getCurrent().navigate(FacturasView.class);
+            } catch (ObjectOptimisticLockingFailureException exception) {
+                Notification n = Notification.show(
+                        "Error al almacenar los datos. Revisa tu conexión e intenta nuevamente");
+                n.setPosition(Position.MIDDLE);
+                n.addThemeVariants(NotificationVariant.LUMO_ERROR);
+            }
+        });
+        
         return mainLayout;
     }
 
-    private void refreshGrid() {
+    
+    private void clearForm() {
+        populateForm(null);
+    }
+
+    private void populateForm(Factura value) {
+        this.pedido = value;
+           this.producto.setValue(null);
+           this.cantidad.setValue("");
+           this.clientes.setValue(null);
+
+    }
+    
+
+	private void refreshGrid() {
+    	this.controlador.consultarPedido(this.clientes.getValue().getIdcliente());
         grid.getDataProvider().refreshAll();
     }
 
@@ -186,6 +225,31 @@ public class FacturasView extends Div implements FacturasViewModel {
 		Collection<Factura> items = pedidos;
 		grid.setItems(items);
 		this.pedidos = pedidos;
+		
+	}
+
+	@Override
+	public void refrescarComboClientes(List<Clientes> cliente) {
+		Collection<Clientes> listadoClientes = cliente;
+		clientes.setItems(listadoClientes);
+		this.cliente=cliente;
+	}
+	
+	
+	public void refrescarComboProductos(List<Producto> productos) {
+		Collection<Producto> listadoProductos = productos;
+		producto.setItems(listadoProductos);
+		this.productos=productos;
+	}
+	
+	
+	@Override
+	public void mostrarMensajeCreacion(boolean exito) {
+		String mensajeMostrar = "Pedido realizado exitosamente!";
+		if(!exito) {
+			mensajeMostrar = "Pedido no pudo ser realizado";
+		}
+		 Notification.show(mensajeMostrar);	
 		
 	}
 }

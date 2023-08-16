@@ -8,10 +8,8 @@ public class Clientes extends AbstractEntity {
     private Integer idcliente;
     private String nombre;
     private String correoelectronico;
-    private String idultimopedido;
     private String telefono;
     private String direccion;
-    private Integer pedidosrealizados;
     
 	public Integer getIdcliente() {
 		return idcliente;
@@ -39,25 +37,13 @@ public class Clientes extends AbstractEntity {
 	public void setDireccion(String direccion) {
 		this.direccion = direccion;
 	}
-	public Integer getPedidosrealizados() {
-		return pedidosrealizados;
-	}
-	public void setPedidosrealizados(Integer pedidosrealizados) {
-		this.pedidosrealizados = pedidosrealizados;
-	}
+	
 	public String getCorreoelectronico() {
 		return correoelectronico;
 	}
 	public void setCorreoelectronico(String correoelectronico) {
 		this.correoelectronico = correoelectronico;
 	}
-	public String getIdultimopedido() {
-		return idultimopedido;
-	}
-	public void setIdultimopedido(String idultimopedido) {
-		this.idultimopedido = idultimopedido;
-	}
-    
     
 	
     

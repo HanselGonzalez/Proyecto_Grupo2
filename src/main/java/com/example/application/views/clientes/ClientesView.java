@@ -9,9 +9,11 @@ import com.example.application.views.productos.ProductosView;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
+import com.vaadin.flow.component.confirmdialog.ConfirmDialog;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.H3;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -20,6 +22,7 @@ import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -47,7 +50,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
     private TextField Nombre;
     private TextField Telefono;
     private TextField Direccion;
-    private TextField correo;
+    private EmailField correo;
 
     private final Button cancel = new Button("Cancel");
     private final Button save = new Button("Save");
@@ -73,13 +76,11 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         add(splitLayout);
 
         // Configure Grid
-        grid.addColumn("idcliente").setAutoWidth(true).setHeader("ID Cliente");
+        grid.addColumn("idcliente").setAutoWidth(true).setHeader("Identidad ");
         grid.addColumn("nombre").setAutoWidth(true);
         grid.addColumn("telefono").setAutoWidth(true);
         grid.addColumn("direccion").setAutoWidth(true);
-        grid.addColumn("correoelectronico").setAutoWidth(true);
-        grid.addColumn("idultimopedido").setAutoWidth(true).setHeader("ID Ultimo Pedido");
-        grid.addColumn("pedidosrealizados").setAutoWidth(true).setHeader("Pedidos Realizados");
+        grid.addColumn("correoelectronico").setAutoWidth(true).setHeader("Correo Electronico");
         //grid.addColumn("pedidos").setAutoWidth(true);
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
 
@@ -93,7 +94,22 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
             }
         });
 
-        // Configure Form
+        GridContextMenu<Clientes> menu = grid.addContextMenu();
+        menu.addItem("Eliminar", event -> {
+        	ConfirmDialog dialog = new ConfirmDialog();
+        	dialog.setHeader("Confirmar Eliminación de "+event.getItem().get().getNombre());
+        	dialog.setText(
+        	        "¿Confirmas que deseas eliminar el producto seleccionado?");
+
+        	dialog.setCancelable(true);
+
+        	dialog.setConfirmText("Eliminar");
+        	dialog.setConfirmButtonTheme("error primary");
+        	dialog.addConfirmListener(event2 -> {
+        		this.controlador.eliminarClientes(event.getItem().get().getIdcliente());
+        	});
+        	dialog.open();
+        });
 
         this.controlador.consultarCliente();
         
@@ -104,17 +120,41 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
         save.addClickListener(e -> {
             try {
-                if (this.clientes == null) {
+            	if (this.clientes == null) {                	
                     this.clientes = new Clientes();
+                    
+                        String idclientetext = this.IdCliente.getValue();
+                        int idcliente = Integer.parseInt(idclientetext);
+                        this.clientes.setIdcliente(idcliente);
+                        
+                    
+	                    this.clientes.setNombre(this.Nombre.getValue());
+	                    this.clientes.setDireccion(this.Direccion.getValue());
+	                    this.clientes.setTelefono(this.Telefono.getValue());
+	                    this.clientes.setCorreoelectronico(this.correo.getValue());
+	                    this.controlador.crearClientes(clientes);
+                    
+                }else {
+                	
+                        
+	                	String idclientetext = this.IdCliente.getValue();
+	                    int idcliente = Integer.parseInt(idclientetext);
+	                    this.clientes.setIdcliente(idcliente);
+	                    
+	                
+		                this.clientes.setNombre(this.Nombre.getValue());
+		                this.clientes.setDireccion(this.Direccion.getValue());
+		                this.clientes.setTelefono(this.Telefono.getValue());
+		                this.clientes.setCorreoelectronico(this.correo.getValue());
+		                this.controlador.actualizarClientes(clientes);
                 }
                 
                 clearForm();
                 refreshGrid();
-                Notification.show("Data updated");
                 UI.getCurrent().navigate(ClientesView.class);
             } catch (ObjectOptimisticLockingFailureException exception) {
                 Notification n = Notification.show(
-                        "Error updating the data. Somebody else has updated the record while you were making changes.");
+                        "Error al almacenar los datos. Revisa tu conexión e intenta nuevamente");
                 n.setPosition(Position.MIDDLE);
                 n.addThemeVariants(NotificationVariant.LUMO_ERROR);
             }
@@ -123,7 +163,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
     @Override
     public void beforeEnter(BeforeEnterEvent event) {
-        Optional<String> clientesId = event.getRouteParameters().get(CLIENTES_ID);
+        Optional<Long> clientesId = event.getRouteParameters().getLong(CLIENTES_ID);
         boolean encontrado = false;
         if (clientesId.isPresent()) {
             for(Clientes c: this.cliente) {
@@ -157,13 +197,13 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
         
         FormLayout formLayout = new FormLayout();
-        IdCliente = new TextField("ID Cliente");
+        IdCliente = new TextField("Identidad");
         Nombre = new TextField("Nombre");
         Nombre.setPrefixComponent(VaadinIcon.USER.create());
         Telefono = new TextField("Telefono");
        Telefono.setPrefixComponent(VaadinIcon.PHONE.create());
         Direccion = new TextField("Direccion");
-        correo = new TextField("Correo Electronico");
+        correo = new EmailField("Correo Electronico");
 
         grid.asSingleSelect().addValueChangeListener(event -> {
             Clientes selectedProducto = event.getValue();
@@ -236,6 +276,37 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
 
 	public void setCliente(List<Clientes> cliente) {
 		this.cliente = cliente;
+	}
+
+	@Override
+	public void mostrarMensajeCreacion(boolean exito) {
+		String mensajeMostrar = "Cliente creado exitosamente!";
+		if(!exito) {
+			mensajeMostrar = "Cliente no pudo ser creado";
+		}
+		 Notification.show(mensajeMostrar);	
+		
+	}
+
+	@Override
+	public void mostrarMensajeActualizacion(boolean exito) {
+		String mensajeMostrar = "Cliente actualizado exitosamente!";
+		if(!exito) {
+			mensajeMostrar = "Cliente no pudo ser actualizado";
+		}
+		 Notification.show(mensajeMostrar);	
+		
+	}
+
+	@Override
+	public void mostrarMensajeEliminacion(boolean exito) {
+		String mensajeMostrar = "Cliente eliminado exitosamente!";
+		if(!exito) {
+			mensajeMostrar = "Cliente no pudo ser eliminado";
+		}
+		 Notification.show(mensajeMostrar);
+		 this.controlador.consultarCliente();	
+		
 	}
 	
 

@@ -19,9 +19,9 @@ public class RepositoryClient {
 	
 		OkHttpClient client = new OkHttpClient.Builder()
 			.addInterceptor(interceptor)
-			.connectTimeout(timeout, TimeUnit.MICROSECONDS)
-			.writeTimeout(timeout, TimeUnit.MICROSECONDS)
-			.readTimeout(timeout, TimeUnit.MICROSECONDS)
+			.connectTimeout(timeout, TimeUnit.MILLISECONDS)
+			.writeTimeout(timeout, TimeUnit.MILLISECONDS)
+			.readTimeout(timeout, TimeUnit.MILLISECONDS)
 			.build();
 		
 		retrofit = new Retrofit.Builder()

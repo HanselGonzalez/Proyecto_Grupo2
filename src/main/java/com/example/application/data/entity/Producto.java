@@ -1,17 +1,15 @@
 package com.example.application.data.entity;
 
-import jakarta.persistence.Entity;
 
-@Entity
-public class Producto extends AbstractEntity {
 
+public class Producto  {
+	
     private Integer idproducto;
-    private String idcategoria;
+    private Integer idcategoria;
     private String nombre;
     private Double precio;
     private Integer cantidad;
-    private String proveedor;
-    private Integer pedidosrealizados;
+    private String categoria;
 
 
     public Integer getIdProducto() {
@@ -33,29 +31,29 @@ public class Producto extends AbstractEntity {
         this.precio = precio;
     }
     
-	public String getProveedor() {
-		return proveedor;
-	}
-	public void setProveedor(String proveedor) {
-		this.proveedor = proveedor;
-	}
-	public String getIdCategoria() {
-		return idcategoria;
-	}
-	public void setIdCategoria(String idCategoria) {
-		this.idcategoria = idCategoria;
-	}
-	public Integer getPedidosrealizados() {
-		return pedidosrealizados;
-	}
-	public void setPedidosrealizados(Integer pedidosrealizados) {
-		this.pedidosrealizados = pedidosrealizados;
-	}
+	
+	
 	public Integer getCantidad() {
 		return cantidad;
 	}
 	public void setCantidad(Integer cantidad) {
 		this.cantidad = cantidad;
 	}
-
+	
+	
+	
+	
+	public String getCategoria() {
+		return categoria;
+	}
+	public void setCategoria(String categoria) {
+		this.categoria = categoria;
+	}
+	public Integer getIdcategoria() {
+		return idcategoria;
+	}
+	public void setIdcategoria(Integer idcategoria) {
+		this.idcategoria = idcategoria;
+	}
+	
 }

@@ -35,3 +35,8 @@
     .button-spacing {
   margin-right: 10px; 
 }
+
+.rounded-corners {
+    border-radius: 10px; /* Ajusta el valor para controlar la curvatura de las esquinas */
+    overflow: hidden; /* Asegura que el contenido no se desborde de las esquinas redondeadas */
+}

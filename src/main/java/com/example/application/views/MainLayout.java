@@ -59,7 +59,7 @@ public class MainLayout extends AppLayout {
         nav.addItem(new SideNavItem("Dispositivos Electronicos", ProductosView.class, LineAwesomeIcon.DESKTOP_SOLID.create()));
         nav.addItem(new SideNavItem("Clientes", ClientesView.class, LineAwesomeIcon.USER_SOLID.create()));
         nav.addItem(new SideNavItem("Categorias de Productos", CategoriaView.class, LineAwesomeIcon.SHOPPING_CART_SOLID.create()));
-        nav.addItem(new SideNavItem("Facturas", FacturasView.class, LineAwesomeIcon.CREDIT_CARD.create()));
+        nav.addItem(new SideNavItem("Pedidos", FacturasView.class, LineAwesomeIcon.CREDIT_CARD.create()));
 
         return nav;
     }
