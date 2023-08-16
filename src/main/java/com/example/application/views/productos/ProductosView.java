@@ -143,9 +143,6 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
                 if (this.producto == null) {                	
                     this.producto = new Producto();
                     
-                        String idproductotext = this.idProducto.getValue();
-                        int idproducto = Integer.parseInt(idproductotext);
-                        this.producto.setIdProducto(idproducto);
                         
                         String preciotext = this.precio.getValue();
                         double precio = Double.parseDouble(preciotext);
@@ -163,9 +160,6 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
                     
                 }else {
                 	
-                        String idproductotext = this.idProducto.getValue();
-                        int idproducto = Integer.parseInt(idproductotext);
-                        this.producto.setIdProducto(idproducto);
                         
                         String preciotext = this.precio.getValue();
                         double precio = Double.parseDouble(preciotext);
@@ -233,8 +227,6 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
         header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
         
         FormLayout formLayout = new FormLayout();
-        idProducto = new TextField("Id Producto");
-        idProducto.setPrefixComponent(VaadinIcon.DESKTOP.create());
         nombre = new TextField("Nombre");
         stock = new TextField("Cantidad");
         precio = new TextField("Precio");
@@ -244,7 +236,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
         categoria.setItemLabelGenerator(Categoria::getNombre);
         
        
-        formLayout.add(header, idProducto, categoria, nombre,precio, stock);
+        formLayout.add(header,  nombre, categoria,precio, stock);
 
         editorDiv.add(formLayout);
         createButtonLayout(editorLayoutDiv);
@@ -281,13 +273,11 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
     private void populateForm(Producto value) {
         this.producto = value;
         if (value == null) {
-           this.idProducto.setValue("");
            this.categoria.setValue(null);
            this.nombre.setValue("");
            this.precio.setValue("0.0");
            this.stock.setValue("");
         } else {
-        	this.idProducto.setValue(String.valueOf(value.getIdProducto()));
             this.nombre.setValue(value.getNombre());
             this.precio.setValue(String.valueOf(value.getPrecio()));
             this.stock.setValue(String.valueOf(value.getCantidad()));
