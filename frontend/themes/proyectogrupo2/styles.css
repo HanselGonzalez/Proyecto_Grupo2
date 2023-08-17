@@ -12,8 +12,8 @@
     }
 
     [theme~="dark"] {
-      --lumo-base-color: hsla(191, 31%, 20%, 0.49);
-      --lumo-primary-color: hsla(210, 18%, 39%, 0.49);
+      --lumo-base-color: #180A1B;
+      --lumo-primary-color: #DF2C20;
       --lumo-primary-color-50pct: hsla(210, 18%, 39%, 0.5);
       --lumo-primary-color-10pct: hsla(210, 18%, 39%, 0.1);
       --lumo-primary-text-color: hsl(214, 100%, 94%);

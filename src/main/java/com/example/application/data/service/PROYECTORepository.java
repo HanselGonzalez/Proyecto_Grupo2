@@ -1,5 +1,7 @@
 package com.example.application.data.service;
 
+import java.math.BigInteger;
+
 import com.example.application.data.entity.Categoria;
 import com.example.application.data.entity.Clientes;
 import com.example.application.data.entity.Factura;
@@ -90,7 +92,7 @@ public interface PROYECTORepository {
 	    "User-Agent: Retrofit-Sample-App"
 	})
 	@DELETE("/pls/apex/uth23bd/PDE/clientes")
-	Call<ResponseBody> eliminarClientes(@Query("id") Integer identidadC);
+	Call<ResponseBody> eliminarClientes(@Query("id") String identidadC);
 	
 	
 	//CATEGORIAS TABLA
@@ -133,7 +135,7 @@ public interface PROYECTORepository {
 	    "User-Agent: Retrofit-Sample-App"
 	})
 	@GET("/pls/apex/uth23bd/PDE/pedidos")
-	Call<ResponsePedidos>obtenerPedidos(@Query("id") Integer idcliente);
+	Call<ResponsePedidos>obtenerPedidos(@Query("id") String idcliente);
 	
 	
 	@Headers({

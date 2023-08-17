@@ -3,6 +3,7 @@ import retrofit2.Call;
 import retrofit2.Response;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import com.example.application.data.entity.Categoria;
 import com.example.application.data.entity.Clientes;
@@ -102,7 +103,7 @@ public class PROYECTORepositoryImpl {
 	}
 	
 	
-	public boolean deleteClientes(Integer identidadC) throws IOException {
+	public boolean deleteClientes(String identidadC) throws IOException {
 		Call<ResponseBody> call = client.getDatabaseService().eliminarClientes(identidadC);
 		Response<ResponseBody> response = call.execute();
 		return response.isSuccessful();
@@ -147,7 +148,7 @@ public class PROYECTORepositoryImpl {
 	
 	//PEDIDOS
 	
-	public ResponsePedidos getPedidos(Integer idcliente) throws IOException {
+	public ResponsePedidos getPedidos(String idcliente) throws IOException {
 		Call<ResponsePedidos> call = client.getDatabaseService().obtenerPedidos(idcliente);
 		Response<ResponsePedidos> response = call.execute();
 		if(response.isSuccessful()) {

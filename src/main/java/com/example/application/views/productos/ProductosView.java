@@ -247,7 +247,7 @@ public class ProductosView extends Div implements BeforeEnterObserver, Productos
     private void createButtonLayout(Div editorLayoutDiv) {
         HorizontalLayout buttonLayout = new HorizontalLayout();
         buttonLayout.setClassName("button-layout");
-        cancel.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+        cancel.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         save.addThemeVariants(ButtonVariant.LUMO_PRIMARY);
         buttonLayout.add(save, cancel);
         editorLayoutDiv.add(buttonLayout);

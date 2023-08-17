@@ -24,7 +24,7 @@ public class FacturasInteractorImpl implements FacturasInteractor {
 
 
 		@Override
-		public void consultarPedido(Integer idcliente) {
+		public void consultarPedido(String idcliente) {
 			try {
 				ResponsePedidos respuesta = this.modelo.getPedidos(idcliente);
 				this.vista.refrescarGridPedidos(respuesta.getItems());

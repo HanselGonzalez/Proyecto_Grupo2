@@ -1,14 +1,16 @@
 package com.example.application.data.entity;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Categoria {
 
     private Integer idcategoria;
     private String nombre;
     private String descripcion;
-    private String proveedor;
     private Integer cantidad;
     private String nombreproductos;
+    private String fechadecreacion;
     
 	public Integer getIdcategoria() {
 		return idcategoria;
@@ -40,13 +42,19 @@ public class Categoria {
 	public void setNombreproductos(String nombreproductos) {
 		this.nombreproductos = nombreproductos;
 	}
-	public String getProveedor() {
-		return proveedor;
+	
+	public String getFechadecreacion() {
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+    	Date fecha = new Date();
+
+    	String fechadelpedido = dateFormat.format(fecha);
+		return fechadelpedido;
 	}
-	public void setProveedor(String proveedor) {
-		this.proveedor = proveedor;
+	public void setFechadecreacion(String fechadecreacion) {
+		this.fechadecreacion = fechadecreacion;
 	}
-    
+	
 	
 	
 	

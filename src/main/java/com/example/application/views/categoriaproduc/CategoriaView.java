@@ -8,6 +8,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
+import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.html.*;
@@ -27,8 +28,10 @@ import com.vaadin.flow.theme.lumo.LumoUtility.Height;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
 import com.vaadin.flow.theme.lumo.LumoUtility.Padding;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
@@ -43,17 +46,15 @@ public class CategoriaView extends Div implements CategoriasViewModel {
 
     private Categoria categorias;
     private CategoriasInteractor controlador;
-	private TextField idcategoria;
 	private TextField nombre;
 	private TextField descripcion;
 	private Button aceptar;
 	private Button cancelar;
 	private ComboBox<Categoria> cbcategoria;
-	private boolean columnaProductosVisible = false;
 	
 	private Button consultar;
 
-	private TextField proveedor;
+
 
     public CategoriaView() {
         addClassNames("categoria-view");
@@ -95,7 +96,6 @@ public class CategoriaView extends Div implements CategoriasViewModel {
 
         nombre = new TextField("Nombre");
         descripcion = new TextField("Descripción");
-        proveedor = new TextField("Proveedor");
         cbcategoria = new ComboBox<>("Filtrar Categoria");
         aceptar = new Button("Aceptar");
         cancelar = new Button("Cancelar");
@@ -104,7 +104,6 @@ public class CategoriaView extends Div implements CategoriasViewModel {
         
         nombre.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
         descripcion.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
-        proveedor.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
         cbcategoria.addClassNames(LumoUtility.Padding.Horizontal.SMALL, LumoUtility.Padding.Vertical.SMALL);
         aceptar.addClassNames(Margin.Top.MEDIUM, Padding.LARGE);
         aceptar.addClassName("button-spacing");
@@ -116,7 +115,7 @@ public class CategoriaView extends Div implements CategoriasViewModel {
 
         
 
-        personalDetails.add( nombre, descripcion,proveedor,cbcategoria, aceptar,cancelar,consultar);
+        personalDetails.add( nombre, descripcion,cbcategoria, aceptar,cancelar,consultar);
 
         return personalDetails;
     }
@@ -131,7 +130,8 @@ public class CategoriaView extends Div implements CategoriasViewModel {
         grid.addColumn("nombre").setAutoWidth(true).setHeader("Categoria");
         grid.addColumn("descripcion").setAutoWidth(true).setHeader("Descripcion");
         grid.addColumn("cantidad").setAutoWidth(true).setHeader("Cantidad de Productos");
-        grid.addColumn("proveedor").setAutoWidth(true).setHeader("Proveedor");
+        grid.addColumn("fechadecreacion").setAutoWidth(true).setHeader("Fecha de Creacion");
+
 
 
         grid.addThemeVariants(GridVariant.LUMO_NO_BORDER);
@@ -156,9 +156,12 @@ public class CategoriaView extends Div implements CategoriasViewModel {
                     this.categorias = new Categoria();
                     
                     this.categorias.setNombre(this.nombre.getValue());
-                    this.categorias.setProveedor(this.proveedor.getValue());
                     this.categorias.setDescripcion(this.descripcion.getValue());
-                    
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yyyy");
+                	Date fecha = new Date();
+                	String fechadecreacion = dateFormat.format(fecha);
+                	
+                	this.categorias.setFechadecreacion(fechadecreacion);
                     this.controlador.crearCategoria(categorias);
                     
                clearForm();
@@ -184,7 +187,6 @@ public class CategoriaView extends Div implements CategoriasViewModel {
            this.categorias = value;
            this.nombre.setValue("");
            this.descripcion.setValue("");
-           this.proveedor.setValue("");
            this.cbcategoria.setValue(null);
     }
     

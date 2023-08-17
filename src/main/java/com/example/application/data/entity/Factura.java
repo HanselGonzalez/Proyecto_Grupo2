@@ -8,8 +8,8 @@ import jakarta.persistence.Entity;
 @Entity
 public class Factura extends AbstractEntity {
 
-    private String npedido;
-    private Integer idcliente;
+    private Integer npedido;
+    private String idcliente;
     private String cliente;
     private Integer idproducto;
     private String producto;
@@ -19,12 +19,6 @@ public class Factura extends AbstractEntity {
     
     
     
-	public String getNpedido() {
-		return npedido;
-	}
-	public void setNpedido(String npedido) {
-		this.npedido = npedido;
-	}
 	
 	
 	public Double getPrecio() {
@@ -47,12 +41,9 @@ public class Factura extends AbstractEntity {
 		
 		this.fechadelpedido = fechadelpedido;
 	}
-	public Integer getIdcliente() {
-		return idcliente;
-	}
-	public void setIdcliente(Integer idcliente) {
-		this.idcliente = idcliente;
-	}
+
+	
+	
 	public Integer getIdproducto() {
 		return idproducto;
 	}
@@ -77,6 +68,19 @@ public class Factura extends AbstractEntity {
 	public void setCantidad(Integer cantidad) {
 		this.cantidad = cantidad;
 	}
+	public Integer getNpedido() {
+		return npedido;
+	}
+	public void setNpedido(Integer npedido) {
+		this.npedido = npedido;
+	}
+	public String getIdcliente() {
+		return idcliente;
+	}
+	public void setIdcliente(String idcliente) {
+		this.idcliente = idcliente;
+	}
+	
 	
     
     

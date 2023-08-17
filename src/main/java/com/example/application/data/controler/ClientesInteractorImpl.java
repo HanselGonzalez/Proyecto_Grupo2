@@ -1,6 +1,7 @@
 package com.example.application.data.controler;
 
 import java.io.IOException;
+import java.math.BigInteger;
 
 import com.example.application.data.entity.Clientes;
 import com.example.application.data.entity.ResponseClientes;
@@ -56,7 +57,7 @@ public class ClientesInteractorImpl implements ClientesInteractor {
 
 
 		@Override
-		public void eliminarClientes(Integer identidadC) {
+		public void eliminarClientes(String identidadC) {
 			try {
 				boolean respuesta = this.modelo.deleteClientes(identidadC);
 				this.vista.mostrarMensajeEliminacion(respuesta);

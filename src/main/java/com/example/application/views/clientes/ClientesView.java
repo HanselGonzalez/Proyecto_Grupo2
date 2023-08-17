@@ -30,6 +30,8 @@ import com.vaadin.flow.router.PageTitle;
 import com.vaadin.flow.router.Route;
 import com.vaadin.flow.theme.lumo.LumoUtility.FontSize;
 import com.vaadin.flow.theme.lumo.LumoUtility.Margin;
+
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -123,9 +125,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
             	if (this.clientes == null) {                	
                     this.clientes = new Clientes();
                     
-                        String idclientetext = this.IdCliente.getValue();
-                        int idcliente = Integer.parseInt(idclientetext);
-                        this.clientes.setIdcliente(idcliente);
+                    	this.clientes.setIdcliente(this.IdCliente.getValue());
                         
                     
 	                    this.clientes.setNombre(this.Nombre.getValue());
@@ -137,10 +137,8 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
                 }else {
                 	
                         
-	                	String idclientetext = this.IdCliente.getValue();
-	                    int idcliente = Integer.parseInt(idclientetext);
-	                    this.clientes.setIdcliente(idcliente);
-	                    
+                    	this.clientes.setIdcliente(this.IdCliente.getValue());
+
 	                
 		                this.clientes.setNombre(this.Nombre.getValue());
 		                this.clientes.setDireccion(this.Direccion.getValue());
@@ -193,7 +191,7 @@ public class ClientesView extends Div implements BeforeEnterObserver, ClientesVi
         editorDiv.setClassName("editor");
         editorLayoutDiv.add(editorDiv);
         
-        H3 header = new H3("Consultar Cliente");
+        H3 header = new H3("Crear Cliente");
         header.addClassNames(Margin.Bottom.MEDIUM, Margin.Top.SMALL, FontSize.XXLARGE);
         
         FormLayout formLayout = new FormLayout();

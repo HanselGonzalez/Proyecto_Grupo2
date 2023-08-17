@@ -1,22 +1,18 @@
 package com.example.application.data.entity;
 
+import java.math.BigInteger;
+
 import jakarta.persistence.Entity;
 
 @Entity
 public class Clientes extends AbstractEntity {
 
-    private Integer idcliente;
+    private String idcliente;
     private String nombre;
     private String correoelectronico;
     private String telefono;
     private String direccion;
     
-	public Integer getIdcliente() {
-		return idcliente;
-	}
-	public void setIdcliente(Integer idcliente) {
-		this.idcliente = idcliente;
-	}
 	public String getNombre() {
 		return nombre;
 	}
@@ -44,6 +40,20 @@ public class Clientes extends AbstractEntity {
 	public void setCorreoelectronico(String correoelectronico) {
 		this.correoelectronico = correoelectronico;
 	}
+	public String getIdcliente() {
+		return idcliente;
+	}
+	public void setIdcliente(String idcliente) {
+		this.idcliente = idcliente;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
     
 	
     
